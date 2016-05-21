@@ -1,0 +1,18 @@
+---
+# tasks file for webserver
+
+- name: Install nginx
+  apt: name=nginx state=latest
+  notify: restart nginx
+
+- name: Generate nginx configuration
+  template: src=nginx.conf.jinja2 dest=/etc/nginx/nginx.conf mode=0644
+  notify: restart nginx
+
+- name: Install static websites
+  git: repo={{ item.github }} dest=/home/oppr/{{ item.name }} accept_hostkey=yes force=yes update=yes version=master
+  with_items: "{{ static_websites }}"
+  tags:
+    - static_websites
+  become: True
+  become_user: oppr

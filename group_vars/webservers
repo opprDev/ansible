@@ -1,0 +1,5 @@
+static_websites:
+  - name: oppr
+    github: git@github.com:OPPRDev/oppr.io.git
+    trailing_dir: src/
+    server_name: "~^(www\\.)?oppr\\.io$" # do not forget to escape backslashes

@@ -1,2 +1,48 @@
 ---
 # tasks file for common
+
+- name: Remove locale.gen to allow for locale generation
+  file: path=/etc/locale.gen state=absent
+
+- name: Ensure locale en_US.UTF8 exists
+  locale_gen: name=en_US.UTF-8 state=present
+
+- name: Update Timezone to Europe\Lisbon
+  shell: timedatectl set-timezone Europe/Lisbon
+
+- name: "Create oppr User"
+  user:
+    name: oppr
+    state: present
+
+- name: Add keys to oppr user
+  authorized_key:
+    user: oppr
+    key: "{{ lookup('file', 'public_keys/' + item) }}"
+  with_items: "{{ active_users }}"
+  tags:
+    - keys
+
+- name: Makes sure .ssh exists for oppr user
+  file: path=/home/oppr/.ssh state=directory mode=700 owner=oppr
+
+- name: Add private deploy_key to oppr user
+  copy: content="{{ deploy_key.private }}" dest=/home/oppr/.ssh/id_rsa mode=0600 owner=oppr
+
+- name: Add public deploy_key to oppr user
+  copy: content="{{ deploy_key.public }}" dest=/home/oppr/.ssh/id_rsa.pub mode=0600 owner=oppr
+
+- name: Copy sshd_config
+  copy: src=sshd_config dest=/etc/ssh/sshd_config mode=0644 owner=root
+  notify: restart sshd
+
+- name: Ensure apt cache is up to date
+  apt: update_cache=yes
+
+- name: Install some basic utils
+  apt: name={{ item }}
+  with_items:
+    - tree
+    - tmux
+    - htop
+    - git
