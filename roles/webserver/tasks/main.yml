@@ -1,5 +1,12 @@
 ---
 # tasks file for webserver
+- name: Install php-fpm
+  apt: name=php7.0-fpm state=latest
+  notify: restart php-fpm
+
+- name: Copy php-fpm php.ini
+  copy: src=php.ini dest=/etc/php/7.0/fpm/php.ini mode=0644 owner=root
+  notify: restart php-fpm
 
 - name: Install nginx
   apt: name=nginx state=latest

@@ -1,5 +1,7 @@
 worker_processes  1;
 
+user www-data;
+
 events {
     worker_connections  1024;
 }
@@ -16,15 +18,23 @@ http {
 
     gzip  on;
 
-    {% for website in static_websites %}
+{% for website in static_websites %}
     server {
         listen  80;
 
         server_name "{{ website.server_name }}";
 
+        root /home/oppr/{{ website.name }}/{{ website.trailing_dir }};
+
         location / {
-            root   /home/oppr/{{ website.name }}/{{ website.trailing_dir }};
+            try_files $uri $uri/ =404;
         }
+
+        location ~ \.php$ {
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        }
+
     }
-    {% endfor %}
+{% endfor %}
 }
