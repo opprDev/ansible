@@ -35,6 +35,10 @@ http {
             fastcgi_pass unix:/run/php/php7.0-fpm.sock;
         }
 
+{% if website.extra_locations is defined %}
+        {{ website.extra_locations }}
+{% endif %}
+
     }
 {% endfor %}
 }

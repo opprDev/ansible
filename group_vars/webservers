@@ -3,6 +3,10 @@ static_websites:
     github: git@github.com:OPPRDev/oppr.io.git
     trailing_dir: src/
     server_name: "~^(www\\.)?oppr\\.io$" # do not forget to escape backslashes
+    extra_locations: |
+        location /webmail {
+            rewrite ^(.*)$ https://a2plcpnl0464.prod.iad2.secureserver.net:2096/ break;
+        }
 
   - name: dev.oppr
     github: git@github.com:OPPRDev/dev.oppr.io.git
