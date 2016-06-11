@@ -32,3 +32,4 @@
     - static_websites
   become: True
   become_user: oppr
+  notify: restart nginx
