@@ -1,5 +1,11 @@
 ---
 # tasks file for webserver
+- name: Copy aldente public deploy key
+  copy: content="{{ aldente_deploy_key.public }}" dest="/home/oppr/.ssh/aldente_deploy_key.pub" mode=0600 owner=oppr
+
+- name: Copy aldente private deploy key
+  copy: content="{{ aldente_deploy_key.private }}" dest="/home/oppr/.ssh/aldente_deploy_key" mode=0600 owner=oppr
+
 - name: Install sendmail
   apt: name=sendmail state=latest
 
@@ -20,7 +26,7 @@
   notify: restart nginx
 
 - name: Install static websites
-  git: repo={{ item.github }} dest=/home/oppr/{{ item.name }} accept_hostkey=yes force=yes update=yes version=master
+  git: repo={{ item.github }} dest=/home/oppr/{{ item.name }} accept_hostkey=yes force=yes update=yes version=master key_file=/home/oppr/.ssh/{{ item.key if item.key is defined else "id_rsa"}}
   with_items: "{{ static_websites }}"
   tags:
     - static_websites
