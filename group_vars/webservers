@@ -18,3 +18,9 @@ static_websites:
     trailing_dir: ""
     server_name: "~^(www\\.)?aldentelisboa\\.pt$" # do not forget to escape backslashes
     key: aldente_deploy_key
+
+  - name: cagjournal.org
+    trailing_dir: ""
+    server_name: "~^(www\\.)?cagjournal\\.org$" # do not forget to escape backslashes
+    extra_locations: |
+        index index.php index.html index.htm;
