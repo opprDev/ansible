@@ -24,19 +24,20 @@ static_websites:
     trailing_dir: src/public/
     server_name: "~^(www\\.)?snapjob\\.pt$" # do not forget to escape backslashes
     key: snapjob_deploy_key
+    override_locations: True
     extra_locations: |
         location / {
-                # First attempt to serve request as file, then
-                # as directory, then fall back to displaying a 404.
-                try_files $uri $uri/ /index.php?$query_string;
+            # First attempt to serve request as file, then
+            # as directory, then fall back to displaying a 404.
+            try_files $uri $uri/ /index.php?$query_string;
         }
         location ~ \.php$ {
-                try_files $uri =404;
-                fastcgi_split_path_info ^(.+\.php)(/.+)$;
-                fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
-                fastcgi_index index.php;
-                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-                include fastcgi_params;
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
         }
 
   - name: cagjournal.org
@@ -48,10 +49,13 @@ static_websites:
   - name: funnysugar.com
     github: git@github.com:opprDev/funnySugar.git
     trailing_dir: "html/"
-    server_name: "~^(www\\.)?funnysugar\.com$" # do not forget to escape backslashes
+    server_name: "~^(www\\.)?funnysugar\\.com$" # do not forget to escape backslashes
     key: funnysugar_deploy_key
 
   - name: forum.oppr.io
+    server_name: "~^forum\\.oppr\\.io$" # do not forget to escape backslashes
+    trailing_dir: ""
+    override_locations: True
     extra_locations: |
         location / {
             # phpBB uses index.htm
