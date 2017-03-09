@@ -26,6 +26,7 @@ http {
 
         root /home/oppr/{{ website.name }}/{{ website.trailing_dir }};
 
+{% if website.override_locations is not defined %}
         location / {
             try_files $uri $uri/ =404;
         }
@@ -34,6 +35,7 @@ http {
             include snippets/fastcgi-php.conf;
             fastcgi_pass unix:/run/php/php7.0-fpm.sock;
         }
+{% endif %}
 
 {% if website.extra_locations is defined %}
         {{ website.extra_locations }}
