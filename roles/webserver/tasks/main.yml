@@ -6,6 +6,12 @@
 - name: Copy aldente private deploy key
   copy: content="{{ aldente_deploy_key.private }}" dest="/home/oppr/.ssh/aldente_deploy_key" mode=0600 owner=oppr
 
+- name: Copy snapjob public deploy key
+  copy: content="{{ snapjob_deploy_key.public }}" dest="/home/oppr/.ssh/snapjob_deploy_key.pub" mode=0600 owner=oppr
+
+- name: Copy snapjob private deploy key
+  copy: content="{{ snapjob_deploy_key.private }}" dest="/home/oppr/.ssh/snapjob_deploy_key" mode=0600 owner=oppr
+
 - name: Install sendmail
   apt: name=sendmail state=latest
 
