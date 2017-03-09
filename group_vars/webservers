@@ -38,3 +38,9 @@ static_websites:
                 fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
                 include fastcgi_params;
         }
+
+  - name: cagjournal.org
+    trailing_dir: ""
+    server_name: "~^(www\\.)?cagjournal\\.org$" # do not forget to escape backslashes
+    extra_locations: |
+        index index.php index.html index.htm;

@@ -33,6 +33,7 @@
 
 - name: Install static websites
   git: repo={{ item.github }} dest=/home/oppr/{{ item.name }} accept_hostkey=yes force=yes update=yes version=master key_file=/home/oppr/.ssh/{{ item.key if item.key is defined else "id_rsa"}}
+  when: "{{ item.github is defined }}"
   with_items: "{{ static_websites }}"
   tags:
     - static_websites
