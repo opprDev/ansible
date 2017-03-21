@@ -12,3 +12,4 @@
 - hosts: webservers
   roles:
     - webserver
+    - { role: snapjob, tags: ['snapjob'] }

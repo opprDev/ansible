@@ -19,27 +19,6 @@ static_websites:
     server_name: "~^(www\\.)?aldentelisboa\\.pt$" # do not forget to escape backslashes
     key: aldente_deploy_key
 
-  - name: snapjob.pt
-    github: git@github.com:FMCalisto/SnapJob.git
-    trailing_dir: src/public/
-    server_name: "~^(www\\.)?snapjob\\.pt$" # do not forget to escape backslashes
-    key: snapjob_deploy_key
-    override_locations: True
-    extra_locations: |
-        location / {
-            # First attempt to serve request as file, then
-            # as directory, then fall back to displaying a 404.
-            try_files $uri $uri/ /index.php?$query_string;
-        }
-        location ~ \.php$ {
-            try_files $uri =404;
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
-            fastcgi_index index.php;
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            include fastcgi_params;
-        }
-
   - name: cagjournal.org
     trailing_dir: ""
     server_name: "~^(www\\.)?cagjournal\\.org$" # do not forget to escape backslashes

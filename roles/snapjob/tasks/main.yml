@@ -1,0 +1,52 @@
+---
+# tasks file for snapjob
+
+- name: Copy snapjob private deploy key
+  copy: content="{{ snapjob_deploy_key.private }}" dest="/home/oppr/.ssh/snapjob_deploy_key" mode=0600 owner=oppr
+
+- name: Install snapjob service
+  copy:
+    src: snapjob.service
+    dest: /usr/lib/systemd/user/snapjob.service
+    mode: 0644
+  notify: Enable and restart snapjob service
+
+- name: Deploy snapjob
+  git:
+    repo: git@github.com:FMCalisto/SnapJob.git
+    dest: /home/oppr/snapjob
+    version: master
+    key_file: /home/oppr/.ssh/snapjob_deploy_key
+    accept_hostkey: yes
+  become: True
+  become_user: oppr
+
+- name: Install snapjob
+  npm:
+    path: /home/oppr/snapjob
+  become: True
+  become_user: oppr
+
+- name: Build snapjob
+  shell: ./node_modules/.bin/babel src -s -D -d dist
+  args:
+    chdir: /home/oppr/snapjob
+  become: True
+  become_user: oppr
+  notify: Enable and restart nginx service
+
+- name: Copy snapjob config file
+  copy:
+    src: config.js
+    dest: /home/oppr/snapjob/
+    mode: 0644
+  notify: Enable and restart snapjob service
+  become: True
+  become_user: oppr
+
+- name: Copy nginx config file
+  copy:
+    src: snapjob.conf
+    dest: /etc/nginx/conf.d/
+    mode: 0644
+  notify: Enable and restart nginx service

@@ -1,0 +1,8 @@
+---
+# handlers file for snapjob
+
+- name: Enable and restart snapjob service
+  service: name=snapjob state=restarted enabled=yes
+
+- name: Enable and restart nginx service
+  service: name=nginx state=restarted enabled=yes

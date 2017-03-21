@@ -1,0 +1,13 @@
+[Unit]
+Description=SnapJob
+After=network.target
+
+[Service]
+Type=simple
+User=oppr
+WorkingDirectory=/home/oppr/snapjob/dist/
+ExecStart=/usr/bin/nodejs server.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
