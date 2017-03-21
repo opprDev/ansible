@@ -19,8 +19,70 @@ static_websites:
     server_name: "~^(www\\.)?aldentelisboa\\.pt$" # do not forget to escape backslashes
     key: aldente_deploy_key
 
+  - name: snapjob.pt
+    github: git@github.com:FMCalisto/SnapJob.git
+    trailing_dir: src/public/
+    server_name: "~^(www\\.)?snapjob\\.pt$" # do not forget to escape backslashes
+    key: snapjob_deploy_key
+    override_locations: True
+    extra_locations: |
+        location / {
+            # First attempt to serve request as file, then
+            # as directory, then fall back to displaying a 404.
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+        location ~ \.php$ {
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
   - name: cagjournal.org
     trailing_dir: ""
     server_name: "~^(www\\.)?cagjournal\\.org$" # do not forget to escape backslashes
     extra_locations: |
         index index.php index.html index.htm;
+
+  - name: funnysugar.com
+    github: git@github.com:opprDev/funnySugar.git
+    trailing_dir: "html/"
+    server_name: "~^(www\\.)?funnysugar\\.com$" # do not forget to escape backslashes
+    key: funnysugar_deploy_key
+
+  - name: forum.oppr.io
+    server_name: "~^forum\\.oppr\\.io$" # do not forget to escape backslashes
+    trailing_dir: ""
+    override_locations: True
+    extra_locations: |
+        location / {
+            # phpBB uses index.htm
+            index index.php index.html index.htm;
+            try_files $uri $uri/ @rewriteapp;
+        }
+
+        location @rewriteapp {
+            rewrite ^(.*)$ /app.php/$1 last;
+        }
+
+        # Deny access to internal phpbb files.
+        location ~ /(config\.php|common\.php|includes|cache|files|store|images/avatars/upload) {
+            deny all;
+            # deny was ignored before 0.8.40 for connections over IPv6.
+            # Use internal directive to prohibit access on older versions.
+            internal;
+        }
+
+        # Pass the php scripts to fastcgi server specified in upstream declaration.
+        location ~ \.php(/|$) {
+            # Necessary for php.
+            fastcgi_split_path_info ^(.+\.php)(/.*)$;
+            fastcgi_param PATH_INFO $fastcgi_path_info;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            fastcgi_param DOCUMENT_ROOT $realpath_root;
+        #   try_files $uri $uri/ /app.php$is_args$args;
+            include snippets/fastcgi-php.conf;
+            fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        }
